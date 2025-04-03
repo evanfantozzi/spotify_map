@@ -1,0 +1,18 @@
+[project]
+name = "spotify-apps"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "datetime>=5.5",
+    "django>=5.1.7",
+    "dotenv>=0.9.9",
+    "pandas>=2.2.3",
+    "postgres>=4.0",
+    "psycopg2-binary>=2.9.10",
+    "python-dateutil>=2.9.0.post0",
+    "python-dotenv>=1.1.0",
+    "spotipy>=2.25.1",
+    "sqlalchemy>=2.0.40",
+]

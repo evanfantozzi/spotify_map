@@ -1,0 +1,9 @@
+.env
+spotify_apps/data/backup_artist_db.sql
+spotify_apps/data/backup_coords_db.sql
+spotify_apps/__pycache__
+spotify_map/migrations
+spotify_map/__pycache__
+__pycache__/
+*.pyc
+.venv
