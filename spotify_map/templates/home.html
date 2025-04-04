@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Top Artists</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at 20% 20%, #ff5ca2, #1DB954 40%, #191414 80%);
+            background-size: cover;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            text-align: center;
+            position: relative;
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.75);
+            padding: 40px 30px;
+            border-radius: 10px;
+            max-width: 700px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 30px;
+            color: #1DB954;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 20px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .btn-spotify {
+            background-color: #1DB954;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .btn-spotify:hover {
+            background-color: #1ED760;
+            transform: scale(1.05);
+        }
+
+        .logout-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .logout-btn {
+            background-color: #ff5ca2;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #ff4069;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Your Spotify World</h1>
+        <p>Explore your top artists across time, and discover where they're from!</p>
+        
+        <div class="btn-group">
+            <a href="{% url 'top_artists' time_range='short' %}" class="btn-spotify">Last 4 Weeks</a>
+            <a href="{% url 'top_artists' time_range='medium' %}" class="btn-spotify">Last 6 Months</a>
+            <a href="{% url 'top_artists' time_range='long' %}" class="btn-spotify">All Time</a>
+        </div>
+    </div>
+
+    <div class="logout-container">
+        <a href="{% url 'logout' %}" class="logout-btn">Log Out</a>
+    </div>
+
+</body>
+</html>

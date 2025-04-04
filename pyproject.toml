@@ -7,7 +7,10 @@ requires-python = ">=3.13"
 dependencies = [
     "datetime>=5.5",
     "django>=5.1.7",
+    "django-leaflet>=0.31.0",
     "dotenv>=0.9.9",
+    "geopy>=2.4.1",
+    "httpx>=0.28.1",
     "pandas>=2.2.3",
     "postgres>=4.0",
     "psycopg2-binary>=2.9.10",

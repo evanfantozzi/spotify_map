@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logging Out...</title>
+    <script type="text/javascript">
+        // Open Spotify logout in a new tab
+        const spotifyLogoutWindow = window.open('https://accounts.spotify.com/en/logout', '_blank');
+
+        // Wait a few seconds, then redirect back to our landing page
+        setTimeout(() => {
+            if (spotifyLogoutWindow) {
+                spotifyLogoutWindow.close();
+            }
+            window.location.href = "/";  // Change this to your actual landing page URL
+        }, 3000);  // Wait for 3 seconds before redirecting
+    </script>
+</head>
+<body>
+    <h2>Logging you out...</h2>
+    <p>You will be redirected shortly.</p>
+</body>
+</html>

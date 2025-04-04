@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Artists - {{ time_range|title }} Term</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at 20% 20%, #ff5ca2, #1DB954 40%, #191414 80%);
+            background-size: cover;
+            color: white;
+            display: flex;
+            flex-direction: column; /* Align vertically */
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            padding-top: 20px;
+        }
+
+        .navbar {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .navbar button {
+            background-color: #1DB954;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .navbar button:hover {
+            background-color: #1db954c0;
+            transform: scale(1.05);
+        }
+
+        .logout-btn {
+            background-color: #ff5ca2;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #ff4069;
+            transform: scale(1.05);
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.75);
+            padding: 30px;
+            border-radius: 40px;
+            max-width: 1200px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            margin-top: 0;
+            display: flex;
+            justify-content: space-between; /* Align the content horizontally */
+            flex-direction: row;
+            width: 100%;
+            max-height: 80vh;
+        }
+        h1 {
+        font-size: 32px;
+        margin-bottom: 20px;
+        color: #1DB954;
+        font-weight: 700;
+        background-color: rgba(0, 0, 0, 0.75); /* Same semi-transparent background as the container */
+        padding: 10px 20px; /* Added padding for better readability */
+        border-radius: 10px; /* Optional: rounds the corners of the heading */
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4); /* Optional: gives it some depth */
+    }
+
+        .artist-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        overflow-y: auto;
+        max-height: 60vh;
+        overflow: scroll;
+        scrollbar-width: none;
+        width: 600px; /* Set a fixed width instead of percentage */
+        padding-right: 10px;
+}
+
+        .artist-card {
+            background-color: rgba(105, 105, 105, 0.85);
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+            color: white;
+            font-size: 16px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .artist-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .artist-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 75%;
+        }
+
+        .rank-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rank {
+            font-weight: bold;
+            font-size: 20px;
+            color: #1DB954;
+        }
+
+        .name {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .birth-info {
+            font-size: 16px;
+            font-weight: 400;
+            color: #ccc;
+        }
+
+        /* Map styling */
+        #map {
+            width: 45%; /* Reduced width to leave more space for the list */
+            height: 350px; /* Increased height for better visibility */
+            margin-top: 90px; /* Moved the map down */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column; /* Stack elements vertically on small screens */
+                max-height: none; /* No max height on small screens */
+            }
+
+            .artist-list,
+            #map {
+                width: 100%; /* Take full width on small screens */
+                margin-bottom: 20px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .artist-card {
+                font-size: 14px;
+            }
+
+            .rank {
+                font-size: 18px;
+            }
+
+            .name {
+                font-size: 20px;
+            }
+        }
+
+        /* Log out button positioning */
+        .logout-btn-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <button onclick="window.location.href='{% url 'home' %}'">Home</button>
+        <button onclick="window.location.href='{% url 'top_artists' time_range='short' %}'">Last 4 Weeks</button>
+        <button onclick="window.location.href='{% url 'top_artists' time_range='medium' %}'">Last 6 Months</button>
+        <button onclick="window.location.href='{% url 'top_artists' time_range='long' %}'">All Time</button>
+    </div>
+
+    <!-- Log out button placed in top right -->
+    <div class="logout-btn-container">
+        <button class="logout-btn" onclick="window.location.href='{% url 'logout' %}'">Log Out</button>
+    </div>
+
+    <h1>Top Artists - 
+        {% if time_range == 'short' %}
+            Last 4 Weeks
+        {% elif time_range == 'medium' %}
+            Last 6 Months
+        {% elif time_range == 'long' %}
+            All Time
+        {% else %}
+            Unknown Time Range
+        {% endif %}
+    </h1>
+    <div class="container">
+        <div>
+
+
+            <!-- List of artist cards -->
+            <div class="artist-list">
+                {% for artist in artists %}
+                <div class="artist-card">
+                    <div class="artist-details">
+                        <div class="rank-name">
+                            <div class="rank">#{{ artist.rank }}</div>
+                            <div class="name">{{ artist.name }}</div>
+                        </div>
+                        <div class="birth-info">{{ artist.birth_location }}</div>
+                        <div class="birth-info">Born: {% if artist.birth_date %}{{ artist.birth_date }}{% else %}Unknown{% endif %}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Map -->
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        window.onload = function() {
+            // Set up the default position in case no saved state is found
+            var defaultCenter = [40, -20];
+    
+            var savedCenter = JSON.parse(localStorage.getItem('mapCenter'));
+            var savedZoom = localStorage.getItem('mapZoom');
+    
+            var mapCenter = savedCenter || defaultCenter;
+            var mapZoom = savedZoom || 2;
+    
+            var map = L.map('map').setView(mapCenter, mapZoom);
+    
+            // Use CartoDB Positron for a sleek, neutral background map
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png').addTo(map);
+            map.on('moveend', function() {
+                var center = map.getCenter();
+                var zoom = map.getZoom();
+                localStorage.setItem('mapCenter', JSON.stringify(center));
+                localStorage.setItem('mapZoom', zoom);
+            });
+    
+            function applyCircularJitter(lat, lng, radius = 0.01, numMarkers = 3) {
+                var angleStep = (2 * Math.PI) / numMarkers;
+                var markers = [];
+    
+                for (var i = 0; i < numMarkers; i++) {
+                    var angle = angleStep * i;
+                    var jitterLat = lat + radius * Math.sin(angle);
+                    var jitterLng = lng + radius * Math.cos(angle);
+                    markers.push(L.latLng(jitterLat, jitterLng));
+                }
+    
+                return markers;
+            }
+    
+            var dotIcon = L.divIcon({
+                className: 'dot-icon',
+                html: '<div class="dot"></div>',
+                iconSize: [15, 15],
+                iconAnchor: [7, 7],
+            });
+    
+            var artistCoords = {};
+    
+            {% for artist in artists %}
+            {% if artist.birth_latitude and artist.birth_longitude %}
+                var coords = [{{ artist.birth_latitude }}, {{ artist.birth_longitude }}];
+                var key = coords.join(',');
+    
+                if (!artistCoords[key]) {
+                    artistCoords[key] = [];
+                }
+                artistCoords[key].push({
+                    name: "{{ artist.name }}",
+                    location: "{{ artist.birth_location }}"
+                });
+            {% endif %}
+            {% endfor %}
+    
+            for (var key in artistCoords) {
+                var coords = key.split(',');
+                var lat = parseFloat(coords[0]);
+                var lng = parseFloat(coords[1]);
+                var artistsAtCoord = artistCoords[key];
+    
+                if (artistsAtCoord.length > 1) {
+                    var jitteredLatLngs = applyCircularJitter(lat, lng, 0.02, artistsAtCoord.length);
+    
+                    jitteredLatLngs.forEach(function(latLng, index) {
+                        L.marker(latLng, { icon: dotIcon })
+                            .addTo(map)
+                            .bindPopup("<b>" + artistsAtCoord[index].name + "</b>: " + artistsAtCoord[index].location);
+                    });
+                } else {
+                    L.marker([lat, lng], { icon: dotIcon })
+                        .addTo(map)
+                        .bindPopup("<b>" + artistsAtCoord[0].name + "</b>: " + artistsAtCoord[0].location);
+                }
+            }
+        };
+    </script>
+    
+    <style>
+        .dot-icon .dot {
+            width: 20px;
+            height: 20px;
+            background-color:#1DB954;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+    </style>
+    
+    </body>
+</html>

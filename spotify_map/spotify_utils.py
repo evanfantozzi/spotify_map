@@ -35,8 +35,12 @@ def fetch_top_spotify_artists(sp, time_range="long_term"):
     # Request top artists from Spotify
     results = sp.current_user_top_artists(time_range=time_range, limit=50)
     
+    # Rename id key to spotify_id
+    for artist in results["items"]:
+        artist["spotify_id"] = artist.pop("id")
+    
     # Return them
-    return results["artists"]
+    return results["items"]
 
 def get_authorize_url():
     """
