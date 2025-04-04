@@ -127,7 +127,7 @@ def fetch_top_artists_info(st_artists: list, mt_artists: list, lt_artists: list)
                 if new_artist:
                     
                     # Add to list of short-term/medium-term/long-term artists
-                    new_artist["rank"] = i
+                    new_artist["rank"] = i+1
                     new_artist["spotify_id"] = artist["spotify_id"]
                     del new_artist["musicbrainz_data"] # for now, not including 
                     artist_dictionaries.append(new_artist)

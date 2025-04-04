@@ -233,7 +233,7 @@
                             <div class="rank">#{{ artist.rank }}</div>
                             <div class="name">{{ artist.name }}</div>
                         </div>
-                        <div class="birth-info">{{ artist.birth_location }}</div>
+                        <div class="birth-info">{% if artist.birth_location %}{{ artist.birth_location }}{% else %}Unknown{% endif %}</div>
                         <div class="birth-info">Born: {% if artist.birth_date %}{{ artist.birth_date }}{% else %}Unknown{% endif %}</div>
                     </div>
                 </div>
