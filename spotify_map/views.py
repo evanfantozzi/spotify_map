@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout as auth_logout
-from .musicbrainz import fetch_top_artists_info
+from .musicbrainz import fetch_artists_info
 from .spotify_utils import get_authorize_url, get_access_token, fetch_top_spotify_artists, get_spotify_client
 from django.conf import settings
 from django.http import HttpResponseRedirect
+from django.core.cache import cache
 
 # --- Landing Route (Pre-login) ---
 def landing(request):
@@ -62,7 +63,7 @@ def login_callback(request):
     lt_artists = fetch_top_spotify_artists(sp, "long_term")
     
     # Fetch the full data of the top artists from MusicBrainz and Spotify, and store them in the session
-    all_artists = fetch_top_artists_info(st_artists, mt_artists, lt_artists)
+    all_artists = fetch_artists_info(st_artists, mt_artists, lt_artists)
     
     # Store the artists data in the session
     request.session['artists'] = all_artists
@@ -88,7 +89,7 @@ def top_artists(request, time_range):
     else:
         # Handle invalid time range
         return redirect('home')  # Redirect to home if the time_range is invalid
-
+    print(artists)
     return render(request, 'top_artists.html', {'artists': artists, 'time_range': time_range})
 
 # --- Logout Route ---
@@ -97,8 +98,10 @@ def logout(request):
     Logs out the user from Django, then shows a page that forces them to log out from Spotify.
     """
     # Log the user out from Django
+    cache.clear()
     auth_logout(request)
     request.session.flush()  # Clear session data
+    
 
     # Redirect to a custom page that will handle Spotify logout and return to our site
     return redirect('logout_redirect')

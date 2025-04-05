@@ -8,7 +8,8 @@ sp_oauth = SpotifyOAuth(
     client_id=settings.SPOTIPY_CLIENT_ID,
     client_secret=settings.SPOTIPY_CLIENT_SECRET,
     redirect_uri=settings.SPOTIPY_REDIRECT_URI,
-    scope="user-top-read"  # Scope for fetching top artists
+    scope="user-top-read",  # Scope for fetching top artists 
+    cache_path=None
 )
 
 def get_spotify_client(token_info):
@@ -58,7 +59,7 @@ def get_access_token(code):
     Returns:
         Token information including access token, refresh token, etc.
     """
-    return sp_oauth.get_access_token(code)
+    return sp_oauth.get_access_token(code, check_cache=False)
 
 def refresh_access_token(refresh_token):
     """

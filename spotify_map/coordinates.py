@@ -31,7 +31,7 @@ def get_coords(location: str) -> tuple[float, float] | None:
                 # Initial search didn't work. Try searching on location country 
                 location_parts = location.split(",")
                 
-                if len(location_parts > 1):
+                if len(location_parts) > 1:
                     # Format is [city, country] or [city, state, country], etc.
                     sleep(1.1)
                     coords = geolocator.geocode(location_parts[-1])

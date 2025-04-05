@@ -141,7 +141,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
-
 # Login redirection
 LOGIN_REDIRECT_URL = '/landing'  # Where users are redirected after logging in
 LOGOUT_REDIRECT_URL = '/'  # Where users are redirected after logging out

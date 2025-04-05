@@ -121,11 +121,22 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
 
+        
         .artist-details {
             display: flex;
             flex-direction: column;
             gap: 8px;
             width: 75%;
+        }
+
+
+        .artist-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+            flex-shrink: 0;
         }
 
         .rank-name {
@@ -151,11 +162,17 @@
             color: #ccc;
         }
 
+        .sign{
+            font-size: 16px;
+            font-weight: 400;
+            color: #ccc; 
+        }
+
         /* Map styling */
         #map {
             width: 45%; /* Reduced width to leave more space for the list */
-            height: 350px; /* Increased height for better visibility */
-            margin-top: 90px; /* Moved the map down */
+            height: 550px; /* Increased height for better visibility */
+            margin-top: 20px; /* Moved the map down */
         }
 
         /* Responsive adjustments */
@@ -206,8 +223,17 @@
 
     <!-- Log out button placed in top right -->
     <div class="logout-btn-container">
-        <button class="logout-btn" onclick="window.location.href='{% url 'logout' %}'">Log Out</button>
+        <button class="logout-btn" onclick="clearMapAndLogout()">Log Out</button>
     </div>
+    
+    <script>
+        function clearMapAndLogout() {
+            localStorage.removeItem('mapCenter');
+            localStorage.removeItem('mapZoom');
+            window.location.href = "{% url 'logout' %}";
+        }
+    </script>
+
 
     <h1>Top Artists - 
         {% if time_range == 'short' %}
@@ -222,12 +248,15 @@
     </h1>
     <div class="container">
         <div>
-
-
             <!-- List of artist cards -->
             <div class="artist-list">
                 {% for artist in artists %}
-                <div class="artist-card">
+                <div class="artist-card" data-artist-id="{{ artist.spotify_id }}">
+                    <img 
+                        src="{{ artist.photo|default:'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png' }}" 
+                        alt="{{ artist.name }} photo" 
+                        class="artist-photo"
+                    />
                     <div class="artist-details">
                         <div class="rank-name">
                             <div class="rank">#{{ artist.rank }}</div>
@@ -235,7 +264,9 @@
                         </div>
                         <div class="birth-info">{% if artist.birth_location %}{{ artist.birth_location }}{% else %}Unknown{% endif %}</div>
                         <div class="birth-info">Born: {% if artist.birth_date %}{{ artist.birth_date }}{% else %}Unknown{% endif %}</div>
+                        <div class="sign">{% if artist.sign %}{{ artist.sign }}{% else %}Unknown{% endif %}</div>
                     </div>
+
                 </div>
                 {% endfor %}
             </div>
@@ -246,98 +277,127 @@
     </div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script>
-        window.onload = function() {
-            // Set up the default position in case no saved state is found
-            var defaultCenter = [40, -20];
-    
-            var savedCenter = JSON.parse(localStorage.getItem('mapCenter'));
-            var savedZoom = localStorage.getItem('mapZoom');
-    
-            var mapCenter = savedCenter || defaultCenter;
-            var mapZoom = savedZoom || 2;
-    
-            var map = L.map('map').setView(mapCenter, mapZoom);
-    
-            // Use CartoDB Positron for a sleek, neutral background map
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png').addTo(map);
-            map.on('moveend', function() {
-                var center = map.getCenter();
-                var zoom = map.getZoom();
-                localStorage.setItem('mapCenter', JSON.stringify(center));
-                localStorage.setItem('mapZoom', zoom);
-            });
-    
-            function applyCircularJitter(lat, lng, radius = 0.01, numMarkers = 3) {
-                var angleStep = (2 * Math.PI) / numMarkers;
-                var markers = [];
-    
-                for (var i = 0; i < numMarkers; i++) {
-                    var angle = angleStep * i;
-                    var jitterLat = lat + radius * Math.sin(angle);
-                    var jitterLng = lng + radius * Math.cos(angle);
-                    markers.push(L.latLng(jitterLat, jitterLng));
-                }
-    
-                return markers;
-            }
-    
-            var dotIcon = L.divIcon({
-                className: 'dot-icon',
-                html: '<div class="dot"></div>',
-                iconSize: [15, 15],
-                iconAnchor: [7, 7],
-            });
-    
-            var artistCoords = {};
-    
-            {% for artist in artists %}
-            {% if artist.birth_latitude and artist.birth_longitude %}
-                var coords = [{{ artist.birth_latitude }}, {{ artist.birth_longitude }}];
-                var key = coords.join(',');
-    
-                if (!artistCoords[key]) {
-                    artistCoords[key] = [];
-                }
-                artistCoords[key].push({
-                    name: "{{ artist.name }}",
-                    location: "{{ artist.birth_location }}"
-                });
-            {% endif %}
-            {% endfor %}
-    
-            for (var key in artistCoords) {
-                var coords = key.split(',');
-                var lat = parseFloat(coords[0]);
-                var lng = parseFloat(coords[1]);
-                var artistsAtCoord = artistCoords[key];
-    
-                if (artistsAtCoord.length > 1) {
-                    var jitteredLatLngs = applyCircularJitter(lat, lng, 0.02, artistsAtCoord.length);
-    
-                    jitteredLatLngs.forEach(function(latLng, index) {
-                        L.marker(latLng, { icon: dotIcon })
-                            .addTo(map)
-                            .bindPopup("<b>" + artistsAtCoord[index].name + "</b>: " + artistsAtCoord[index].location);
-                    });
-                } else {
-                    L.marker([lat, lng], { icon: dotIcon })
-                        .addTo(map)
-                        .bindPopup("<b>" + artistsAtCoord[0].name + "</b>: " + artistsAtCoord[0].location);
-                }
-            }
-        };
-    </script>
-    
-    <style>
-        .dot-icon .dot {
-            width: 20px;
-            height: 20px;
-            background-color:#1DB954;
-            border-radius: 50%;
-            border: 2px solid white;
+
+        <script>
+window.onload = function() {
+    // Map setup (same as your existing code)
+    var defaultCenter = [-20, 40];
+    var savedCenter = JSON.parse(localStorage.getItem('mapCenter'));
+    var savedZoom = localStorage.getItem('mapZoom');
+    var mapCenter = savedCenter || defaultCenter;
+    var mapZoom = savedZoom || 2;
+    var map = L.map('map').setView(mapCenter, mapZoom);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png').addTo(map);
+    map.on('moveend', function() {
+        var center = map.getCenter();
+        var zoom = map.getZoom();
+        localStorage.setItem('mapCenter', JSON.stringify(center));
+        localStorage.setItem('mapZoom', zoom);
+    });
+
+    // Function to apply jitter to overlapping markers
+    function applyCircularJitter(lat, lng, radius = 0.01, numMarkers = 3) {
+        var angleStep = (2 * Math.PI) / numMarkers;
+        var markers = [];
+        for (var i = 0; i < numMarkers; i++) {
+            var angle = angleStep * i;
+            var jitterLat = lat + radius * Math.sin(angle);
+            var jitterLng = lng + radius * Math.cos(angle);
+            markers.push(L.latLng(jitterLat, jitterLng));
         }
-    </style>
+        return markers;
+    }
+
+    var dotIcon = L.divIcon({
+        className: 'dot-icon',
+        html: '<div class="dot"></div>',
+        iconSize: [15, 15],
+        iconAnchor: [7, 7],
+    });
+
+    var artistCoords = {};
+    var artistMarkers = {};
+
+    // Populate artistCoords with artist data
+    {% for artist in artists %}
+    {% if artist.birth_latitude and artist.birth_longitude %}
+        var coords = [{{ artist.birth_latitude }}, {{ artist.birth_longitude }}];
+        var key = coords.join(',');
+    
+        if (!artistCoords[key]) {
+            artistCoords[key] = [];
+        }
+        artistCoords[key].push({
+            id: "{{ artist.spotify_id }}",
+            name: "{{ artist.name }}",
+            location: "{{ artist.birth_location }}"
+        });
+    {% endif %}
+    {% endfor %}
+
+    // Create markers for artists
+    for (var key in artistCoords) {
+        var coords = key.split(',');
+        var lat = parseFloat(coords[0]);
+        var lng = parseFloat(coords[1]);
+        var artistsAtCoord = artistCoords[key];
+
+        if (artistsAtCoord.length > 1) {
+            var jitteredLatLngs = applyCircularJitter(lat, lng, 0.02, artistsAtCoord.length);
+
+            jitteredLatLngs.forEach(function(latLng, index) {
+                var marker = L.marker(latLng, { icon: dotIcon }).addTo(map).bindPopup("<b>" + artistsAtCoord[index].name + "</b>: " + artistsAtCoord[index].location);
+                artistMarkers[artistsAtCoord[index].id] = marker;
+            });
+        } else {
+            var marker = L.marker([lat, lng], { icon: dotIcon }).addTo(map).bindPopup("<b>" + artistsAtCoord[0].name + "</b>: " + artistsAtCoord[0].location);
+            artistMarkers[artistsAtCoord[0].id] = marker;
+        }
+    }
+
+    // Add hover interaction
+    document.querySelectorAll('.artist-card').forEach(function(card) {
+        card.addEventListener('mouseenter', function() {
+            var artistId = card.getAttribute('data-artist-id');
+            if (artistMarkers[artistId]) {
+                // Highlight the marker by changing its icon
+                artistMarkers[artistId].setIcon(L.divIcon({
+                    className: 'dot-icon highlighted',
+                    html: '<div class="dot"></div>',
+                    iconSize: [20, 20],
+                    iconAnchor: [10, 10],
+                }));
+            }
+        });
+
+        card.addEventListener('mouseleave', function() {
+            var artistId = card.getAttribute('data-artist-id');
+            if (artistMarkers[artistId]) {
+                // Reset to default icon
+                artistMarkers[artistId].setIcon(dotIcon);
+            }
+        });
+    });
+};
+
+
+</script>
+    
+<style>
+    .dot-icon .dot {
+        width: 20px;
+        height: 20px;
+        background-color:#1DB954;
+        border-radius: 50%;
+        border: 2px solid white;
+    }
+
+    .dot-icon.highlighted .dot {
+        background-color: #FF4069; /* Highlight color */
+        transform: scale(1.5); /* Increase the size for highlighting */
+    }
+</style>
     
     </body>
 </html>

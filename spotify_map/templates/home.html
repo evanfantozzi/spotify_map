@@ -112,8 +112,11 @@
     </div>
 
     <div class="logout-container">
-        <a href="{% url 'logout' %}" class="logout-btn">Log Out</a>
+        <a href="{% url 'logout' %}" class="logout-btn" onclick="localStorage.removeItem('mapCenter'); localStorage.removeItem('mapZoom');">Log Out</a>
+
     </div>
+
+    
 
 </body>
 </html>
