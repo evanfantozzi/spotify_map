@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at 20% 20%, #ff5ca2, #1DB954 40%, #191414 80%);
+            background-size: cover;
+            color: white;
+            text-align: center;
+            overflow: hidden; /* Hide body overflow */
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.75);
+            padding: 50px;
+            border-radius: 30px;
+            max-width: 800px;
+            width: 85%;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh; /* Ensure it takes up full viewport height */
+            overflow-y: auto; /* Allow scrolling inside the container */
+        }
+
+        h1 {
+            font-size: 55px;
+            margin-bottom: 30px;
+            color: #1DB954;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 22px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .loading-spinner {
+            border: 10px solid rgba(255, 255, 255, 0.3);
+            border-top: 10px solid #1DB954;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            animation: spin 2s linear infinite;
+            margin: 30px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .slideshow-container {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .artist-slide {
+            width: 80%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .artist-slide.visible {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 48px;
+            }
+
+            p {
+                font-size: 20px;
+            }
+
+            .container {
+                padding: 60px 30px;
+            }
+
+            .slideshow-container {
+                width: 100%;
+                height: 150px;
+            }
+
+            .artist-slide {
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Loading Your Top Artists...</h1>
+    <p>We are fetching your top artists and preparing the map. This may take a moment!</p>
+    <h2>P.S. Longer load times are only experienced the first time you open the app </h2>
+    <div class="slideshow-container" id="slideshow-container">
+        <!-- Images inserted via JavaScript -->
+    </div>
+    <div class="loading-spinner"></div>
+</div>
+
+<script>
+    const artistImages = [
+        { name: "1", url: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"},
+        { name: "2", url: "https://images.unsplash.com/photo-1563841930606-67e2bce48b78?q=80&w=2054&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"},
+        { name: "3", url: "https://images.unsplash.com/photo-1509824227185-9c5a01ceba0d?q=80&w=3115&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"},
+        { name: "4", url: "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"},
+        { name: "5", url: "https://images.unsplash.com/photo-1501612780327-45045538702b?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"},
+        { name: "6", url: "https://images.unsplash.com/photo-1515175192010-cf3250992719?q=80&w=3132&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"},
+        { name: "7", url: "https://images.unsplash.com/photo-1473396413399-6717ef7c4093?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"},
+        { name: "8", url: "https://images.unsplash.com/uploads/1411160110892ab555b6f/80b0d25e?q=80&w=2000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"},
+        { name: "9", url: "https://images.unsplash.com/photo-1520600661691-801f48869ee4?q=80&w=3264&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"},
+        { name: "10", url: "https://images.unsplash.com/photo-1620577610365-86c411bad78d?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"}
+    ];
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    function createSlideshow() {
+        shuffle(artistImages);
+        const container = document.getElementById('slideshow-container');
+        artistImages.forEach((artist, index) => {
+            const img = document.createElement('img');
+            img.src = artist.url;
+            img.alt = artist.name;
+            img.classList.add('artist-slide');
+            if (index === 0) {
+                img.classList.add('visible'); // Show the first image
+            }
+            container.appendChild(img);
+        });
+    }
+
+    function rotateImages() {
+        const slides = document.querySelectorAll('.artist-slide');
+        let currentIndex = 0;
+
+        setInterval(() => {
+            slides[currentIndex].classList.remove('visible'); // Hide current image
+            currentIndex = (currentIndex + 1) % slides.length; // Move to next image
+            slides[currentIndex].classList.add('visible'); // Show next image
+        }, 3000); // Change every 3 seconds
+    }
+
+    window.onload = function () {
+        createSlideshow();
+        rotateImages();
+
+        // Delay for 10 seconds before redirecting
+        setTimeout(function () {
+            fetch('/start-loading/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = "{% url 'home' %}";
+                    } else {
+                        alert("There was an error loading your data.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Something went wrong while fetching your data.");
+                });
+        }, 0);  // 10 seconds delay
+    };
+</script>
+</body>
+</html>

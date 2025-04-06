@@ -77,7 +77,7 @@
             justify-content: space-between; /* Align the content horizontally */
             flex-direction: row;
             width: 100%;
-            max-height: 80vh;
+            max-height: 70vh;
         }
         h1 {
         font-size: 32px;
@@ -95,7 +95,7 @@
         flex-direction: column;
         gap: 15px;
         overflow-y: auto;
-        max-height: 60vh;
+        max-height: 70vh;
         overflow: scroll;
         scrollbar-width: none;
         width: 600px; /* Set a fixed width instead of percentage */
@@ -121,7 +121,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
 
-        
+
         .artist-details {
             display: flex;
             flex-direction: column;
@@ -165,7 +165,7 @@
         .sign{
             font-size: 16px;
             font-weight: 400;
-            color: #ccc; 
+            color: #ccc;
         }
 
         /* Map styling */
@@ -225,7 +225,7 @@
     <div class="logout-btn-container">
         <button class="logout-btn" onclick="clearMapAndLogout()">Log Out</button>
     </div>
-    
+
     <script>
         function clearMapAndLogout() {
             localStorage.removeItem('mapCenter');
@@ -235,7 +235,7 @@
     </script>
 
 
-    <h1>Top Artists - 
+    <h1>Your Top Artists -
         {% if time_range == 'short' %}
             Last 4 Weeks
         {% elif time_range == 'medium' %}
@@ -252,9 +252,9 @@
             <div class="artist-list">
                 {% for artist in artists %}
                 <div class="artist-card" data-artist-id="{{ artist.spotify_id }}">
-                    <img 
-                        src="{{ artist.photo|default:'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png' }}" 
-                        alt="{{ artist.name }} photo" 
+                    <img
+                        src="{{ artist.photo|default:'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png' }}"
+                        alt="{{ artist.name }} photo"
                         class="artist-photo"
                     />
                     <div class="artist-details">
@@ -263,8 +263,7 @@
                             <div class="name">{{ artist.name }}</div>
                         </div>
                         <div class="birth-info">{% if artist.birth_location %}{{ artist.birth_location }}{% else %}Unknown{% endif %}</div>
-                        <div class="birth-info">Born: {% if artist.birth_date %}{{ artist.birth_date }}{% else %}Unknown{% endif %}</div>
-                        <div class="sign">{% if artist.sign %}{{ artist.sign }}{% else %}Unknown{% endif %}</div>
+                        <div class="birth-info">Born: {% if artist.birth_date %}{{ artist.birth_date }} ({{ artist.sign }}){% else %}Unknown{% endif %}</div>
                     </div>
 
                 </div>
@@ -280,8 +279,8 @@
 
         <script>
 window.onload = function() {
-    // Map setup (same as your existing code)
-    var defaultCenter = [-20, 40];
+    // Map setup
+    var defaultCenter = ([15, -40]);
     var savedCenter = JSON.parse(localStorage.getItem('mapCenter'));
     var savedZoom = localStorage.getItem('mapZoom');
     var mapCenter = savedCenter || defaultCenter;
@@ -324,14 +323,15 @@ window.onload = function() {
     {% if artist.birth_latitude and artist.birth_longitude %}
         var coords = [{{ artist.birth_latitude }}, {{ artist.birth_longitude }}];
         var key = coords.join(',');
-    
+
         if (!artistCoords[key]) {
             artistCoords[key] = [];
         }
         artistCoords[key].push({
             id: "{{ artist.spotify_id }}",
             name: "{{ artist.name }}",
-            location: "{{ artist.birth_location }}"
+            location: "{{ artist.birth_location }}",
+            rank: "{{ artist.rank }}"
         });
     {% endif %}
     {% endfor %}
@@ -347,11 +347,12 @@ window.onload = function() {
             var jitteredLatLngs = applyCircularJitter(lat, lng, 0.02, artistsAtCoord.length);
 
             jitteredLatLngs.forEach(function(latLng, index) {
-                var marker = L.marker(latLng, { icon: dotIcon }).addTo(map).bindPopup("<b>" + artistsAtCoord[index].name + "</b>: " + artistsAtCoord[index].location);
+                var marker = L.marker(latLng, { icon: dotIcon }).addTo(map).bindPopup("<b>" + artistsAtCoord[index].rank + ". " + artistsAtCoord[index].name + "</b> " + "</b><br>" + artistsAtCoord[index].location)
+;
                 artistMarkers[artistsAtCoord[index].id] = marker;
             });
         } else {
-            var marker = L.marker([lat, lng], { icon: dotIcon }).addTo(map).bindPopup("<b>" + artistsAtCoord[0].name + "</b>: " + artistsAtCoord[0].location);
+            var marker = L.marker([lat, lng], { icon: dotIcon }).addTo(map).bindPopup("<b>" + artistsAtCoord[0].rank + ". " + artistsAtCoord[0].name + "</b> " + "</b><br>" + artistsAtCoord[0].location);
             artistMarkers[artistsAtCoord[0].id] = marker;
         }
     }
@@ -383,7 +384,7 @@ window.onload = function() {
 
 
 </script>
-    
+
 <style>
     .dot-icon .dot {
         width: 20px;
@@ -398,6 +399,6 @@ window.onload = function() {
         transform: scale(1.5); /* Increase the size for highlighting */
     }
 </style>
-    
+
     </body>
 </html>

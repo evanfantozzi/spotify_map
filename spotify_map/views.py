@@ -5,6 +5,8 @@ from .spotify_utils import get_authorize_url, get_access_token, fetch_top_spotif
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.core.cache import cache
+from django.http import JsonResponse
+import time
 
 # --- Landing Route (Pre-login) ---
 def landing(request):
@@ -14,10 +16,10 @@ def landing(request):
     """
     # Clear session data if the user is already logged in and visiting the landing page
     request.session.flush()  # Clear all session data
-    
+
     if 'token_info' in request.session:
         del request.session['token_info']  # If token exists, delete it manually
-    
+
     if 'artists' in request.session:
         del request.session['artists']  # If artists data exists, delete it manually
 
@@ -48,27 +50,52 @@ def login(request):
 # --- Callback from Spotify after user logs in ---
 def login_callback(request):
     """
-    Callback page: Get access token and fetch top artists.
+    Callback page: Get access token and store it in the session.
     """
     code = request.GET.get('code')  # Spotify's code returned after successful login
     token_info = get_access_token(code)  # Get access token using the code
     request.session['token_info'] = token_info  # Store token info in session
-    
-    # Get Spotify client with the access token
+
+    # Redirect to loading_page to start fetching data and render loading page
+    return redirect('loading_page')
+
+
+def loading_page(request):
+    """
+    Renders the loading screen. JS will poll `start_loading`.
+    """
+    return render(request, 'loading.html')
+
+def start_loading(request):
+    """
+    Actually loads artist data and returns a status update.
+    """
+    token_info = request.session.get('token_info', None)
+    if not token_info:
+        return JsonResponse({'error': 'No token'}, status=403)
+
     sp = get_spotify_client(token_info)
-    
-    # Fetch top artists (default is long_term)
+
+    # Fetch artist data
     st_artists = fetch_top_spotify_artists(sp, "short_term")
     mt_artists = fetch_top_spotify_artists(sp, "medium_term")
     lt_artists = fetch_top_spotify_artists(sp, "long_term")
-    
-    # Fetch the full data of the top artists from MusicBrainz and Spotify, and store them in the session
     all_artists = fetch_artists_info(st_artists, mt_artists, lt_artists)
-    
-    # Store the artists data in the session
+
+    # Store in session
     request.session['artists'] = all_artists
-    
-    return redirect('home')  # Redirect to home after fetching artists
+    request.session['loading_complete'] = True
+    request.session.modified = True
+
+    return JsonResponse({'success': True})
+
+def check_loading_status(request):
+    """
+    Checks if the artist loading process is complete.
+    Returns a JSON response with the loading status.
+    """
+    loading_complete = request.session.get('loading_complete', False)
+    return JsonResponse({'loading_complete': loading_complete})
 
 def top_artists(request, time_range):
     """
@@ -76,10 +103,10 @@ def top_artists(request, time_range):
     """
     if 'artists' not in request.session:
         return redirect('login')  # Redirect to login if no artists are available
-    
+
     # Get the artist data for the requested time range
     artists_data = request.session.get('artists', None)
-    
+
     if time_range == 'short':
         artists = artists_data.get('st_artists', [])
     elif time_range == 'medium':
@@ -89,7 +116,6 @@ def top_artists(request, time_range):
     else:
         # Handle invalid time range
         return redirect('home')  # Redirect to home if the time_range is invalid
-    print(artists)
     return render(request, 'top_artists.html', {'artists': artists, 'time_range': time_range})
 
 # --- Logout Route ---
@@ -101,7 +127,7 @@ def logout(request):
     cache.clear()
     auth_logout(request)
     request.session.flush()  # Clear session data
-    
+
 
     # Redirect to a custom page that will handle Spotify logout and return to our site
     return redirect('logout_redirect')

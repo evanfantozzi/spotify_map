@@ -24,8 +24,8 @@ SPOTIPY_REDIRECT_URI = os.getenv('SPOTIFY_REDIRECT_URI')
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # GDAL/GEOS PATH
-GDAL_LIBRARY_PATH = '/opt/homebrew/lib/libgdal.dylib'
-GEOS_LIBRARY_PATH = '/opt/homebrew/lib/libgeos_c.dylib'
+GDAL_LIBRARY_PATH = '/usr/local/lib/libgdal.so.35'
+GEOS_LIBRARY_PATH = '/usr/lib/x86_64-linux-gnu/libgeos_c.so'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -36,7 +36,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['evanfantozzi.pythonanywhere.com']
 
 # Application definition
 
@@ -87,12 +87,12 @@ WSGI_APPLICATION = 'spotify_apps.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv("DB_NAME"),  # The database name
-        'USER': os.getenv("DB_USER"),  # Your PostgreSQL username
-        'PASSWORD': os.getenv("DB_PASSWORD"),  # Set your password or load from an environment variable
-        'HOST': os.getenv("DB_HOST"),  # Your database host
-        'PORT': os.getenv("DB_PORT"),  # The PostgreSQL port
+        'ENGINE': 'django.db.backends.mysql',  # Set MySQL backend
+        'NAME': os.getenv('DB_NAME'),  # Reads the DB name from the .env file
+        'USER': os.getenv('DB_USER'),  # Reads the DB user from the .env file
+        'PASSWORD': os.getenv('DB_PASSWORD'),  # Reads the DB password from the .env file
+        'HOST': os.getenv('DB_HOST'),  # Reads the DB host from the .env file
+        'PORT': os.getenv('DB_PORT'),  # Reads the DB port from the .env file
     }
 }
 
