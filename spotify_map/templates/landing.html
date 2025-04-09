@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify Top Artists</title>
+    <title>Your Spotify World</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
@@ -25,9 +25,12 @@
             padding: 50px;
             border-radius: 30px;
             max-width: 800px;
-            height: 60%;
+            height: auto;
             width: 85%;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         h1 {
@@ -63,6 +66,17 @@
             transform: scale(1.1);
         }
 
+        h3 {
+            font-size: 14px; /* Much smaller font size */
+            color: grey;    /* Set text color to grey */
+            margin-top: 50px; /* Added margin to push h3 closer to the bottom */
+        }
+
+        h3 a {
+            text-decoration: underline; /* Add underline to hyperlinks */
+            color: #1DB954; /* Change the link color to match the app's theme */
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 48px;
@@ -89,6 +103,8 @@
         <h1>Welcome to Your Spotify World</h1>
         <p>Log in to discover your top artists, and view their origins on a world map</p>
         <a href="{% url 'login' %}" class="btn-spotify">Login with Spotify</a>
+
+        <h3>I built this app in Django, using APIs from Spotify, MusicBrainz, and OpenStreetMap. Due to the open source nature of MusicBrainz, some artists may have incomplete or incorrect information. Please <a href="mailto:evanfantozzi@uchicago.edu">message me</a> with any bugs or issues to fix! You can view the source code on <a href="https://github.com/evanfantozzi/your_spotify_world" target="_blank">GitHub</a>.</h3>
     </div>
 
 </body>

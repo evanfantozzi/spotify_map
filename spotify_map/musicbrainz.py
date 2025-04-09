@@ -150,6 +150,13 @@ def fetch_artists_info(st_artists: list, mt_artists: list, lt_artists: list) -> 
                 else:
                     sign = None
 
+                # Look for photo
+                if existing_artist.complete_artist_json:
+                    if existing_artist.complete_artist_json.get("images"):
+                       photo = existing_artist.complete_artist_json["images"][0]["url"]
+                    else: photo = None
+                else:
+                    photo = None
 
                 artist_dictionaries.append({
                     'rank': i+1,
@@ -159,7 +166,7 @@ def fetch_artists_info(st_artists: list, mt_artists: list, lt_artists: list) -> 
                     'birth_longitude': existing_artist.birth_longitude,
                     'birth_date': existing_artist.birth_date.isoformat() if existing_artist.birth_date else None,
                     'birth_location': existing_artist.birth_location,
-                    'photo': existing_artist.complete_artist_json["images"][0]["url"] if existing_artist.complete_artist_json.get("images") else None,
+                    'photo': photo,
                     'sign': sign
                 })
             else:
