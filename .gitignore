@@ -6,6 +6,7 @@ spotify_map/migrations
 spotify_apps/data/*
 spotify_map/__pycache__
 __pycache__/
+.cache
 *.pyc
 .venv
 *.csv
