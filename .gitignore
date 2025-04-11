@@ -8,3 +8,4 @@ spotify_map/__pycache__
 __pycache__/
 *.pyc
 .venv
+*.csv
