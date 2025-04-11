@@ -103,11 +103,13 @@
     <div class="container">
         <h1>Your Spotify World</h1>
         <p>Explore your top artists across time, and discover where they're from!</p>
-        
+
         <div class="btn-group">
             <a href="{% url 'top_artists' time_range='short' %}" class="btn-spotify">Last 4 Weeks</a>
             <a href="{% url 'top_artists' time_range='medium' %}" class="btn-spotify">Last 6 Months</a>
             <a href="{% url 'top_artists' time_range='long' %}" class="btn-spotify">All Time</a>
+            <a href="{% url 'zodiac' %}" class="btn-spotify" style="font-size: 16px;">Bonus! Astrology Breakdown</a>
+
         </div>
     </div>
 
@@ -116,7 +118,7 @@
 
     </div>
 
-    
+
 
 </body>
 </html>
