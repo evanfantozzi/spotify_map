@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Artists by Astrological Sign</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at 20% 20%, #ff5ca2, #1DB954 40%, #191414 80%);
+      color: white;
+      padding: 20px;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .navbar button {
+      background-color: #1DB954;
+      border: none;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .navbar button:hover {
+      background-color: #1db954c0;
+      transform: scale(1.05);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 32px;
+      color: White;
+      margin-bottom: 20px;
+    }
+
+    .chart-container {
+      background-color: rgba(0, 0, 0, 0.75);
+      padding: 30px;
+      border-radius: 40px;
+      max-width: 1000px;
+      margin: 0 auto 40px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+
+    h2 {
+      color: #1DB954;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    canvas {
+      background-color: #ffffff10;
+      border-radius: 20px;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <button onclick="window.location.href='{% url 'home' %}'">Back to Home</button>
+  </div>
+
+  <h1>Artists by Astrological Sign</h1>
+
+  <div class="chart-container">
+    <h2>Last 4 Weeks</h2>
+    <canvas id="shortTermChart"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <h2>Last 6 Months</h2>
+    <canvas id="mediumTermChart"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <h2>All Time</h2>
+    <canvas id="longTermChart"></canvas>
+  </div>
+
+<script>
+  const stData = {{ artist_groups_by_range.st_artists|safe }};
+  const mtData = {{ artist_groups_by_range.mt_artists|safe }};
+  const ltData = {{ artist_groups_by_range.lt_artists|safe }};
+
+  const zodiacOrder = [
+    "Capricorn", "Aquarius", "Pisces", "Aries", "Taurus", "Gemini",
+    "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius"
+  ];
+
+  function prepChartData(raw) {
+    const labels = zodiacOrder; // Use the predefined zodiac order
+    const counts = labels.map(sign => raw[sign] ? raw[sign].length : 0); // Count artists or 0 if none
+    const tooltips = labels.map(sign =>
+      raw[sign] ? raw[sign].map(artist => artist.name) : [] // Ensure each sign has an array, even if empty
+    );
+    return { labels, counts, tooltips };
+  }
+
+  function renderBarChart(id, data) {
+    const ctx = document.getElementById(id).getContext('2d');
+    const tooltips = data.tooltips;
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.labels,
+        datasets: [{
+          label: 'Number of Artists',
+          data: data.counts,
+          backgroundColor: '#1DB954',  // Initial bar color
+          hoverBackgroundColor: '#ff5ca2',  // Pink on hover
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return tooltips[context.dataIndex]; // return array of names
+              }
+            },
+            displayColors: false,
+            backgroundColor: '#333',
+            titleFont: { weight: 'bold' },
+            bodyFont: { size: 14 }
+          },
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              color: 'white',
+              stepSize: 1,  // Ensures no .5 ticks by setting step size to 1
+            },
+            grid: { color: '#444' }
+          },
+          x: {
+            ticks: { color: 'white' },
+            grid: { color: '#444' }
+          }
+        }
+      }
+    });
+  }
+
+  renderBarChart("shortTermChart", prepChartData(stData));
+  renderBarChart("mediumTermChart", prepChartData(mtData));
+  renderBarChart("longTermChart", prepChartData(ltData));
+</script>
+
+</body>
+</html>
