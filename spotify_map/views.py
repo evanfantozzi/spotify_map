@@ -118,6 +118,37 @@ def top_artists(request, time_range):
         return redirect('home')  # Redirect to home if the time_range is invalid
     return render(request, 'top_artists.html', {'artists': artists, 'time_range': time_range})
 
+
+# --- Zodiac Route ---
+def zodiac_breakdown(request):
+    """
+    Displays artists grouped by zodiac sign for all time ranges on one page.
+    """
+    if 'artists' not in request.session:
+        return redirect('login')  # Redirect to login if no artists are available
+
+    # Get the artist data for all time ranges
+    artists_data = request.session.get('artists', None)
+
+    # Group the artists by zodiac sign for each time range
+    time_ranges = ['st_artists', 'mt_artists', 'lt_artists']
+    artist_groups_by_range = {}
+
+    for time_range in time_ranges:
+        artist_groups = {}
+        artists = artists_data.get(time_range, [])
+        for artist in artists:
+            sign = artist.get('sign')
+            if sign:
+                if sign not in artist_groups:
+                    artist_groups[sign] = []
+                artist_groups[sign].append(artist)
+
+        artist_groups_by_range[time_range] = artist_groups
+
+    return render(request, 'zodiac.html', {'artist_groups_by_range': artist_groups_by_range})
+
+
 # --- Logout Route ---
 def logout(request):
     """

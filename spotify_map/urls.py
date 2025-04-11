@@ -12,6 +12,7 @@ urlpatterns = [
     path('check_loading_status', views.check_loading_status, name='check_loading_status'),
     path('start-loading/', views.start_loading, name='start_loading'),
     path('top-artists/<str:time_range>/', views.top_artists, name='top_artists'),
+    path('zodiac/', views.zodiac_breakdown, name='zodiac'),
     path('logout/', views.logout, name='logout'),
     path('logout_redirect/', views.logout_redirect, name='logout_redirect'),
 ]
