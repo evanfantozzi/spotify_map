@@ -12,3 +12,7 @@ I use Django and APIs from [**Spotify**](https://developer.spotify.com/documenta
 
 If you'd like to try out the app, [send me your email](mailto:evanfantozzi@gmail.com) and I’ll get you access! Since this is a personal project, Spotify requires keeping the app in *developer mode*, meaning I manually share access to users. Once I do, you'll be able to access the app [**here**](https://evanfantozzi.pythonanywhere.com). 
 
+
+
+Uploading Your Spotify World Demo.mov…
+
