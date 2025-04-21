@@ -1,7 +1,16 @@
-Welcome to Your Spotify World! This is my first web app. I've always been curious about seeing where my music comes from. With that in mind, I built an app that to fetch your top artists (similar to Spotify Wrapped), query their birthdates and hometowns in a Wiki-type database, and display them on an interactive map. At the suggestion of a friend, I also added a breakdown of top artists by astrological sign.
+# 🎧 Welcome to *Your Spotify World!*
 
-I used APIs from Spotify, MusicBrainz, and OpenStreetMap. Due to the open source nature of MusicBrainz, some artists may have incomplete or incorrect information. Please message me with any bugs or issues to fix. Additionally, as this is a personal project, the app is in developer mode and I need to manually add users. Please message me your email if you'd like to try out my app and I'll set you up.! 
+This is my first web app, born out of a curiosity to explore where my music comes from.  
+With that in mind, I built an app that:
 
+- Fetches your **top Spotify artists** (think Spotify Wrapped)  
+- Queries their **birthdates and hometowns** using an open-source music encyclopedia  
+- Displays everything on an **interactive map** 🌍  
+- And, thanks to a friend's suggestion — includes a fun **astrological breakdown** of your top artists ✨
 
-https://github.com/user-attachments/assets/f0b05313-dc3e-4876-a74c-10e3759e931f
+I use APIs from [**Spotify**](https://developer.spotify.com/documentation/web-api), [**MusicBrainz**](https://musicbrainz.org/), and **OpenStreetMap** to run the app. Because MusicBrainz is open-source, you might notice a few artists with incomplete or incorrect info — I’m actively working to improve that, but [let me know](mailto:evanfantozzi@gmail.com) about any that you notice.
+
+If you'd like to try out the app, [send me your email](mailto:evanfantozzi@gmail.com) and I’ll get you access! Since this is a personal project, Spotify requires keeping the app in *developer mode*, meaning I manually share access to users. Once I do, you'll be able to access the app [**here**](https://evanfantozzi.pythonanywhere.com). 
+
+https://github.com/user-attachments/assets/740fc79e-36c0-4b3d-a420-888c6e8cebef
 
