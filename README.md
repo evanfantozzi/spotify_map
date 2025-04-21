@@ -14,5 +14,6 @@ If you'd like to try out the app, [send me your email](mailto:evanfantozzi@gmail
 
 
 
-Uploading Your Spotify World Demo.mov…
+https://github.com/user-attachments/assets/4962b634-38be-4c98-b9a5-d93ffc2b9ca3
+
 
